@@ -39,7 +39,7 @@ function Popup() {
   return (
     <main>
       <header>
-        <img src="/logo.png" alt="" />
+        <img src="/logo.png" alt="InternHack" />
         <div>
           <p>InternHack</p>
           <h1>Autofill</h1>

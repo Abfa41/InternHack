@@ -124,7 +124,7 @@ export default function UserDetailPage() {
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-4">
               {user.profilePic ? (
-                <img src={user.profilePic} alt={user.name} className="w-16 h-16 rounded-xl object-cover" />
+                <img src={user.profilePic} alt={`${user.name}'s profile picture`} className="w-16 h-16 rounded-xl object-cover" />
               ) : (
                 <div className="w-16 h-16 rounded-xl bg-gray-800 flex items-center justify-center text-white text-xl font-bold">
                   {user.name.charAt(0)}
@@ -306,7 +306,7 @@ export default function UserDetailPage() {
             {user.coverImage && (
               <div className="mb-4">
                 <span className="text-gray-500 text-xs block mb-2">Cover Image</span>
-                <img src={user.coverImage} alt="Cover" className="w-full max-w-md h-32 object-cover rounded-lg" />
+                <img src={user.coverImage} alt={`${user.name}'s cover image`} className="w-full max-w-md h-32 object-cover rounded-lg" />
               </div>
             )}
             {user.resumes && user.resumes.length > 0 && (
