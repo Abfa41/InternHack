@@ -1,5 +1,6 @@
 import { prisma } from "../../database/db.js";
-import type { opensourceRepo, RepoDomain, RepoDifficulty } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import type {opensourceRepo, RepoDomain, RepoDifficulty } from "@prisma/client";
 import { fetchGithubGoodFirstIssues, fetchGithubStats, fetchRepoHealthData } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
@@ -875,55 +876,85 @@ export class OpensourceService {
     userId: number,
     repoIds: number[],
   ): Promise<number[]> {
-    // Resolve only IDs that actually exist in the DB
-    const validRepos = await prisma.opensourceRepo.findMany({
-      where: { id: { in: repoIds } },
-      select: { id: true },
-    });
+    const MAX_RETRIES = 3;
 
-    const validIds = [...new Set(validRepos.map((repo) => repo.id))];
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      try {
+        return await prisma.$transaction(
+          async (tx) => {
+            // Resolve only IDs that actually exist in the database
+            const validRepos = await tx.opensourceRepo.findMany({
+              where: { id: { in: repoIds } },
+              select: { id: true },
+            });
 
-    const existingBookmarks = await prisma.opensourceBookmark.findMany({
-      where: { userId },
-      select: { repoId: true },
-    });
+            const validIds = validRepos.map((repo) => repo.id);
 
-    const existingIds = new Set(
-      existingBookmarks.map((bookmark) => bookmark.repoId),
-    );
-    const targetIds = new Set(validIds);
+            // Fetch the user's existing bookmarks inside the transaction
+            const existingBookmarks = await tx.opensourceBookmark.findMany({
+              where: { userId },
+              select: { repoId: true },
+            });
 
-    const idsToCreate = validIds.filter((repoId) => !existingIds.has(repoId));
-    const idsToDelete = existingBookmarks
-      .map((bookmark) => bookmark.repoId)
-      .filter((repoId) => !targetIds.has(repoId));
+            const existingIds = new Set(
+              existingBookmarks.map((bookmark) => bookmark.repoId),
+            );
 
-    await prisma.$transaction([
-      ...(idsToCreate.length > 0
-        ? [
-            prisma.opensourceBookmark.createMany({
-              data: idsToCreate.map((repoId) => ({
-                userId,
-                repoId,
-              })),
-              skipDuplicates: true,
-            }),
-          ]
-        : []),
+            const targetIds = new Set(validIds);
 
-      ...(idsToDelete.length > 0
-        ? [
-            prisma.opensourceBookmark.deleteMany({
-              where: {
-                userId,
-                repoId: { in: idsToDelete },
-              },
-            }),
-          ]
-        : []),
-    ]);
+            // Bookmarks present in the requested list but not yet saved
+            const idsToCreate = validIds.filter(
+              (repoId) => !existingIds.has(repoId),
+            );
 
-    return this.getBookmarkedRepoIds(userId);
+            // Existing bookmarks that are no longer in the requested list
+            const idsToDelete = existingBookmarks
+              .map((bookmark) => bookmark.repoId)
+              .filter((repoId) => !targetIds.has(repoId));
+
+            if (idsToCreate.length > 0) {
+              await tx.opensourceBookmark.createMany({
+                data: idsToCreate.map((repoId) => ({
+                  userId,
+                  repoId,
+                })),
+                skipDuplicates: true,
+              });
+            }
+
+            if (idsToDelete.length > 0) {
+              await tx.opensourceBookmark.deleteMany({
+                where: {
+                  userId,
+                  repoId: { in: idsToDelete },
+                },
+              });
+            }
+
+            // Return the final bookmark state from the same transaction
+            const bookmarks = await tx.opensourceBookmark.findMany({
+              where: { userId },
+              select: { repoId: true },
+              orderBy: { createdAt: "desc" },
+            });
+
+            return bookmarks.map((bookmark) => bookmark.repoId);
+          },
+          {
+            isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+          },
+        );
+      } catch (error: any) {
+        // Retry the complete transaction after a serialization conflict
+        if (error?.code === "P2034" && attempt < MAX_RETRIES - 1) {
+          continue;
+        }
+
+        throw error;
+      }
+    }
+
+    throw new Error("Failed to reconcile bookmarks after retries");
   }
 }
 
