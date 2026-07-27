@@ -421,14 +421,14 @@ export default function AdminAptitudePage() {
             </div>
             <div className="flex gap-2 justify-end">
               <button
-                aria-label="Cancel question edit"
+                aria-describedby="Cancel question edit"
                 onClick={() => setEditingQ(null)}
                 className="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 text-sm"
               >
                 Cancel
               </button>
               <button
-                aria-label="Save question"
+                aria-describedby="Save question"
                 onClick={handleSaveQuestion}
                 disabled={saving || !editingQ.question || !editingQ.optionA}
                 className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 disabled:opacity-50 text-sm flex items-center gap-2"
@@ -595,13 +595,13 @@ export default function AdminAptitudePage() {
                 setEditingCat(null);
                 setCreatingCat(false);
               }}
-              aria-label="Cancel category edit"
+              aria-describedby="Cancel category edit"
               className="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 text-sm flex items-center gap-2"
             >
               <X className="w-4 h-4" /> Cancel
             </button>
             <button
-              aria-label="Save category"
+              aria-describedby="Save category"
               onClick={handleSaveCategory}
               disabled={saving || !editingCat.name}
               className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 disabled:opacity-50 text-sm flex items-center gap-2"
@@ -717,7 +717,7 @@ export default function AdminAptitudePage() {
             </div>
             <div className="flex gap-2 justify-end">
               <button
-                aria-label="Cancel topic edit"
+                aria-describedby="Cancel topic edit"
                 onClick={() => {
                   setEditingTopic(null);
                   setCreatingTopic(false);
@@ -727,7 +727,7 @@ export default function AdminAptitudePage() {
                 Cancel
               </button>
               <button
-                aria-label="Save topic"
+                aria-describedby="Save topic"
                 onClick={handleSaveTopic}
                 disabled={saving || !editingTopic.name}
                 className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 disabled:opacity-50 text-sm flex items-center gap-2"
