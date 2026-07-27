@@ -161,10 +161,10 @@ export default function AdminSkillTestsPage() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-white">{creating ? "Create Skill Test" : `Edit: ${editing.title}`}</h1>
           <div className="flex gap-2">
-            <button onClick={() => { setEditing(null); setCreating(false); }} className="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors text-sm flex items-center gap-2">
+            <button type="button" onClick={() => { setEditing(null); setCreating(false); }} className="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors text-sm flex items-center gap-2">
               <X className="w-4 h-4" /> Cancel
             </button>
-            <button onClick={handleSave} disabled={saving || !editing.skillName || !editing.title} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors disabled:opacity-50 text-sm flex items-center gap-2">
+            <button type="button" onClick={handleSave} disabled={saving || !editing.skillName || !editing.title} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors disabled:opacity-50 text-sm flex items-center gap-2">
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
             </button>
           </div>
@@ -198,7 +198,7 @@ export default function AdminSkillTestsPage() {
         {/* Questions */}
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-white">Questions ({editing.questions?.length ?? 0})</h2>
-          <button onClick={addQuestion} className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm flex items-center gap-1">
+          <button type="button" onClick={addQuestion} className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm flex items-center gap-1">
             <Plus className="w-4 h-4" /> Add Question
           </button>
         </div>
@@ -210,7 +210,7 @@ export default function AdminSkillTestsPage() {
                 {expandedQ === qi ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
                 <span className="text-sm text-white flex-1 truncate">{q.question || `Question ${qi + 1}`}</span>
                 <span className="text-xs text-green-400">Correct: {["A", "B", "C", "D"][q.correctIndex]}</span>
-                <button onClick={(e) => { e.stopPropagation(); removeQuestion(qi); }} className="p-1 text-red-400 hover:bg-red-900/30 rounded">
+                <button type="button" onClick={(e) => { e.stopPropagation(); removeQuestion(qi); }} className="p-1 text-red-400 hover:bg-red-900/30 rounded">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
@@ -252,7 +252,7 @@ export default function AdminSkillTestsPage() {
           <BadgeCheck className="w-6 h-6 text-indigo-400" />
           <h1 className="text-2xl font-bold text-white">Skill Tests</h1>
         </div>
-        <button onClick={handleCreate} className="px-4 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-500 transition-colors flex items-center gap-2">
+        <button type="button" onClick={handleCreate} className="px-4 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-500 transition-colors flex items-center gap-2">
           <Plus className="w-4 h-4" /> Add Test
         </button>
       </div>
