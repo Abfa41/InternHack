@@ -880,22 +880,51 @@ export class OpensourceService {
       where: { id: { in: repoIds } },
       select: { id: true },
     });
-    const validIds = validRepos.map((r) => r.id);
-    if (validIds.length === 0) return this.getBookmarkedRepoIds(userId);
 
-    await prisma.$transaction(
-      validIds.map((repoId: number) =>
-        prisma.opensourceBookmark.upsert({
-          where: { userId_repoId: { userId, repoId } },
-          create: { userId, repoId },
-          update: {},
-        }),
-      ),
+    const validIds = [...new Set(validRepos.map((repo) => repo.id))];
+
+    const existingBookmarks = await prisma.opensourceBookmark.findMany({
+      where: { userId },
+      select: { repoId: true },
+    });
+
+    const existingIds = new Set(
+      existingBookmarks.map((bookmark) => bookmark.repoId),
     );
+    const targetIds = new Set(validIds);
+
+    const idsToCreate = validIds.filter((repoId) => !existingIds.has(repoId));
+    const idsToDelete = existingBookmarks
+      .map((bookmark) => bookmark.repoId)
+      .filter((repoId) => !targetIds.has(repoId));
+
+    await prisma.$transaction([
+      ...(idsToCreate.length > 0
+        ? [
+            prisma.opensourceBookmark.createMany({
+              data: idsToCreate.map((repoId) => ({
+                userId,
+                repoId,
+              })),
+              skipDuplicates: true,
+            }),
+          ]
+        : []),
+
+      ...(idsToDelete.length > 0
+        ? [
+            prisma.opensourceBookmark.deleteMany({
+              where: {
+                userId,
+                repoId: { in: idsToDelete },
+              },
+            }),
+          ]
+        : []),
+    ]);
 
     return this.getBookmarkedRepoIds(userId);
   }
-
 }
 
 
