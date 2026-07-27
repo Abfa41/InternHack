@@ -115,7 +115,7 @@ export const AgentMessage = React.memo(function AgentMessage({ role, content, jo
           user?.profilePic ? (
             <img
               src={user.profilePic}
-              alt={`${user.name ? `${user.name}'s` : "You"} profile picture`}
+              alt={`${user.name ? `${user.name}'s` : "You"}`}
               className="w-full h-full object-cover"
             />
           ) : (

@@ -124,7 +124,7 @@ export default function UserDetailPage() {
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-4">
               {user.profilePic ? (
-                <img src={user.profilePic} alt={`${user.name}'s profile picture`} className="w-16 h-16 rounded-xl object-cover" />
+                <img src={user.profilePic} alt={user.name} className="w-16 h-16 rounded-xl object-cover" />
               ) : (
                 <div className="w-16 h-16 rounded-xl bg-gray-800 flex items-center justify-center text-white text-xl font-bold">
                   {user.name.charAt(0)}
