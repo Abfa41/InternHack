@@ -58,6 +58,8 @@ export default function LessonCodeRunner({ initialCode = "", language = "javascr
           <button
             type="button"
             aria-label="Toggle output"
+            aria-expanded={outputOpen}
+            aria-controls="output"
             onClick={() => setOutputOpen((o) => !o)}
             className="flex items-center gap-2 w-full px-4 py-2.5 bg-stone-50 dark:bg-stone-950/40 hover:bg-stone-100 dark:hover:bg-stone-800/60 transition-colors cursor-pointer text-left"
           >

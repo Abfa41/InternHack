@@ -293,7 +293,7 @@ export default function AdminSkillTestsPage() {
                   <td className="px-4 py-3 text-sm text-gray-300">{test._count?.questions ?? 0}</td>
                   <td className="px-4 py-3 text-sm text-gray-300">{test._count?.attempts ?? 0}</td>
                   <td className="px-4 py-3">
-                    <button aria-label={test.isActive ? "Deactivate test" : "Activate test"} onClick={() => handleToggle(test.id, !test.isActive)} className={`text-xs px-2.5 py-1 rounded-full font-medium transition-colors ${test.isActive ? "bg-green-900/50 text-green-400 hover:bg-green-900/70" : "bg-gray-800 text-gray-500 hover:bg-gray-700"}`}>
+                    <button aria-label={test.isActive ? `Deactivate ${test.title}` : `Activate ${test.title}`} onClick={() => handleToggle(test.id, !test.isActive)} className={`text-xs px-2.5 py-1 rounded-full font-medium transition-colors ${test.isActive ? "bg-green-900/50 text-green-400 hover:bg-green-900/70" : "bg-gray-800 text-gray-500 hover:bg-gray-700"}`}>
                       {test.isActive ? "Active" : "Inactive"}
                     </button>
                   </td>
